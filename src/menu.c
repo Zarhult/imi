@@ -14,7 +14,7 @@ struct menuItem MenuItem_new(int row, int col, const char *text) {
 }
 
 void drawItem(struct menuItem *item) {
-    mvprintw((*item).row, (*item).col, (*item).text);
+    mvprintw(item->row, item->col, item->text);
 }
 
 void selectItem(struct menuItem *selectingItem, struct menuItem *prevItem) {

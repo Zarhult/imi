@@ -40,18 +40,18 @@ int main(int argc, char *argv[]) {
     for (i = 0; (size_t)i < entries.used; ++i) {
         drawItem(&entries.array[i]);
     }
-    MenuItem *curr = &entries.array[0];
-    selectItem(curr, &dummyItem); //selectItem requires a previously selected item, so we use a dummy for the first selection
+    int currIndex = 0;
+    selectItem(&entries.array[currIndex], &dummyItem); //selectItem requires a previously selected item, so we use a dummy for the first selection
     // main loop
     int ch;
     while((ch = getch())) {
-        if (ch == 'j' && curr != &entries.array[entries.used - 1]) {
-            selectItem(curr + 1, curr);
-            ++curr;
+        if (ch == 'j' && currIndex < entries.used - 1) {
+            selectItem(&entries.array[currIndex + 1], &entries.array[currIndex]);
+            ++currIndex;
         }
-        else if (ch == 'k' && curr != &entries.array[0]) {
-            selectItem(curr - 1, curr);
-            --curr;
+        else if (ch == 'k' && currIndex > 0) {
+            selectItem(&entries.array[currIndex - 1], &entries.array[currIndex]);
+            --currIndex;
         }
 
         refresh();
