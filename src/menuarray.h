@@ -2,6 +2,7 @@
 #define MENUARRAY_H
 
 #include <stddef.h>
+
 #include "menu.h"
 
 typedef struct menuArray {

@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <signal.h>
 #include <locale.h>
 
@@ -32,20 +33,24 @@ int main(int argc, char *argv[]) {
     // prepare menu
     MenuArray entries = MenuArray_new(1);
     MenuItem test1 = MenuItem_new(1, 0, "テキスト");
-    MenuItem test2 = MenuItem_new(2, 0, "日本語って難しいだね");
+    MenuItem test2 = MenuItem_new(2, 0, "日本語って難しいよね");
+    MenuItem test3 = MenuItem_new(3, 0, "最愛魔女");
     MenuArray_insert(&entries, &test1);
     MenuArray_insert(&entries, &test2);
+    MenuArray_insert(&entries, &test3);
+
     // draw menu and select first item
     int i;
     for (i = 0; (size_t)i < entries.used; ++i) {
-        drawItem(&entries.array[i]);
+	drawItem(&entries.array[i]);
     }
     int currIndex = 0;
     selectItem(&entries.array[currIndex], &dummyItem); //selectItem requires a previously selected item, so we use a dummy for the first selection
+
     // main loop
     int ch;
-    while((ch = getch())) {
-        if (ch == 'j' && currIndex < entries.used - 1) {
+    while( (ch = getch()) != 'q' ) {
+        if (ch == 'j' && (size_t)currIndex < entries.used - 1) {
             selectItem(&entries.array[currIndex + 1], &entries.array[currIndex]);
             ++currIndex;
         }
