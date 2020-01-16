@@ -21,10 +21,13 @@ int main(int argc, char *argv[]) {
     curs_set(0);
     keypad(stdscr, TRUE);
 
+    // TODO: put this in an if(has_colors() == TRUE) block
+    //start_color();
+    //init_pair(1, COLOR_WHITE, COLOR_BLACK);
+    //attron(COLOR_PAIR(1));
+
     int row, col;
     getmaxyx(stdscr, row, col);
-
-    MenuItem dummyItem = MenuItem_new(-1, -1, "");
 
     attron(A_UNDERLINE);
     printw("imi - A Japanese dictionary tool for nerds");
@@ -32,31 +35,30 @@ int main(int argc, char *argv[]) {
 
     // prepare menu
     MenuArray entries = MenuArray_new(1);
-    MenuItem test1 = MenuItem_new(1, 0, "テキスト");
-    MenuItem test2 = MenuItem_new(2, 0, "日本語って難しいよね");
-    MenuItem test3 = MenuItem_new(3, 0, "最愛魔女");
+    MenuItem test1 = MenuItem_new("テキスト", "てきすと", "text");
+    MenuItem test2 = MenuItem_new("日本語", "にほんご", "japanese");
+    MenuItem test3 = MenuItem_new("魔女", "まじょ", "witch");
+    MenuItem test4 = MenuItem_new("長い", "ながい", "long");
     MenuArray_insert(&entries, &test1);
     MenuArray_insert(&entries, &test2);
     MenuArray_insert(&entries, &test3);
+    MenuArray_insert(&entries, &test4);
 
     // draw menu and select first item
     int i;
-    for (i = 0; (size_t)i < entries.used; ++i) {
-	drawItem(&entries.array[i]);
+    for (i = 0; i < entries.used; ++i) {
+	MenuArray_draw(&entries, i);
     }
-    int currIndex = 0;
-    selectItem(&entries.array[currIndex], &dummyItem); //selectItem requires a previously selected item, so we use a dummy for the first selection
+    MenuArray_select(&entries, 0);
 
     // main loop
     int ch;
     while( (ch = getch()) != 'q' ) {
-        if (ch == 'j' && (size_t)currIndex < entries.used - 1) {
-            selectItem(&entries.array[currIndex + 1], &entries.array[currIndex]);
-            ++currIndex;
+        if (ch == 'j' && entries.currIndex < entries.used - 1) {
+            MenuArray_select(&entries, entries.currIndex + 1);
         }
-        else if (ch == 'k' && currIndex > 0) {
-            selectItem(&entries.array[currIndex - 1], &entries.array[currIndex]);
-            --currIndex;
+        else if (ch == 'k' && entries.currIndex > 0) {
+            MenuArray_select(&entries, entries.currIndex - 1);
         }
 
         refresh();
@@ -75,5 +77,6 @@ int main(int argc, char *argv[]) {
 void resizeHandler(int sig) {
     int row, col;
     getmaxyx(stdscr, row, col);
-    // handle here
+
+    // TODO: handle here
 }

@@ -1,25 +1,17 @@
-#include <ncurses.h>
-
 struct menuItem {
-    int row, col;
-    const char *text;
+    int startRow;
+    int endRow;
+    const char *word;
+    const char *reading;
+    const char *definition;
 };
 
-struct menuItem MenuItem_new(int row, int col, const char *text) {
+struct menuItem MenuItem_new(const char *word, const char *reading, const char *definition) {
     struct menuItem item;
-    item.row = row;
-    item.col = col;
-    item.text = text;
+    item.startRow = -1; // must be set by draw function at runtime
+    item.endRow = -1;   // same
+    item.word = word;
+    item.reading = reading;
+    item.definition = definition;
     return item;
-}
-
-void drawItem(struct menuItem *item) {
-    mvprintw(item->row, item->col, item->text);
-}
-
-void selectItem(struct menuItem *selectingItem, struct menuItem *prevItem) {
-    drawItem(prevItem);
-    attron(A_STANDOUT);
-    drawItem(selectingItem);
-    attroff(A_STANDOUT);
 }

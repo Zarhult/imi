@@ -2,13 +2,13 @@
 #define MENU_H
 
 typedef struct menuItem {
-    int row, col;
-    const char* text;
+    int startRow;
+    int endRow;
+    const char *word;
+    const char *reading;
+    const char *definition;
 } MenuItem;
 
-MenuItem MenuItem_new(int, int, const char *);
-
-void drawItem(MenuItem *);
-void selectItem(MenuItem *, MenuItem *);
+MenuItem MenuItem_new(const char *, const char *, const char *);
 
 #endif // MENU_H
