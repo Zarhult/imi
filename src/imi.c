@@ -4,8 +4,8 @@
 
 #include <ncurses.h>
 
-#include "menu.h"
-#include "menuarray.h"
+#include "word.h"
+#include "wordmenu.h"
 
 // ??!
 
@@ -34,31 +34,31 @@ int main(int argc, char *argv[]) {
     attroff(A_UNDERLINE);
 
     // prepare menu
-    MenuArray entries = MenuArray_new(1);
-    MenuItem test1 = MenuItem_new("テキスト", "てきすと", "text");
-    MenuItem test2 = MenuItem_new("日本語", "にほんご", "japanese");
-    MenuItem test3 = MenuItem_new("魔女", "まじょ", "witch");
-    MenuItem test4 = MenuItem_new("長い", "ながい", "long");
-    MenuArray_insert(&entries, &test1);
-    MenuArray_insert(&entries, &test2);
-    MenuArray_insert(&entries, &test3);
-    MenuArray_insert(&entries, &test4);
+    WordMenu entries = WordMenu_new(1);
+    Word test1 = Word_new("テキスト", "てきすと", "text");
+    Word test2 = Word_new("日本語", "にほんご", "japanese");
+    Word test3 = Word_new("魔女", "まじょ", "witch");
+    Word test4 = Word_new("長い", "ながい", "long");
+    WordMenu_insert(&entries, &test1);
+    WordMenu_insert(&entries, &test2);
+    WordMenu_insert(&entries, &test3);
+    WordMenu_insert(&entries, &test4);
 
     // draw menu and select first item
     int i;
     for (i = 0; i < entries.used; ++i) {
-	MenuArray_draw(&entries, i);
+	WordMenu_draw(&entries, i);
     }
-    MenuArray_select(&entries, 0);
+    WordMenu_select(&entries, 0);
 
     // main loop
     int ch;
     while( (ch = getch()) != 'q' ) {
         if (ch == 'j' && entries.currIndex < entries.used - 1) {
-            MenuArray_select(&entries, entries.currIndex + 1);
+            WordMenu_select(&entries, entries.currIndex + 1);
         }
         else if (ch == 'k' && entries.currIndex > 0) {
-            MenuArray_select(&entries, entries.currIndex - 1);
+            WordMenu_select(&entries, entries.currIndex - 1);
         }
 
         refresh();
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     signal(SIGWINCH, resizeHandler);
 
     // end
-    MenuArray_free(&entries);
+    WordMenu_free(&entries);
     endwin();
 
     return 0;

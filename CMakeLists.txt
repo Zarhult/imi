@@ -8,8 +8,8 @@ include_directories(${CURSES_INCLUDE_DIRS})
 
 add_executable(imi
    src/imi.c
-   src/menu.c
-   src/menuarray.c
+   src/word.c
+   src/wordmenu.c
 )
 
 if(MSVC)

@@ -3,39 +3,39 @@
 
 #include <ncurses.h>
 
-#include "menu.h"
+#include "word.h"
 
-struct menuArray {
-    MenuItem *array;
+struct wordMenu {
+    Word *array;
     size_t size;
     int used;
     int currIndex;
 };
 
-struct menuArray MenuArray_new(size_t initialSize) {
+struct wordMenu WordMenu_new(size_t initialSize) {
     assert(initialSize > 0);
 
-    struct menuArray arr;
-    arr.array = (MenuItem *)malloc(initialSize * sizeof(MenuItem));
+    struct wordMenu arr;
+    arr.array = (Word *)malloc(initialSize * sizeof(Word));
     arr.used = 0;
     arr.size = initialSize;
     arr.currIndex = -1; // set by first MenuArray_select call
     return arr;
 }
 
-void MenuArray_insert(struct menuArray *arr, MenuItem *item) {
+void WordMenu_insert(struct wordMenu *arr, Word *item) {
     assert(item != NULL);
 
     if ((size_t)arr->used == arr->size) {
 	arr->size *= 2;
-	arr->array = (MenuItem *)realloc(arr->array, arr->size * sizeof(MenuItem));
+	arr->array = (Word *)realloc(arr->array, arr->size * sizeof(Word));
     }
     arr->array[arr->used] = *item;
     ++arr->used;
 }
 
 
-void MenuArray_free(struct menuArray *arr) {
+void WordMenu_free(struct wordMenu *arr) {
     free(arr->array);
     arr->array = NULL;
     arr->size = 0;
@@ -43,17 +43,17 @@ void MenuArray_free(struct menuArray *arr) {
     arr->currIndex = -1;
 }
 
-void MenuArray_delete(struct menuArray *arr, int index) {
+void WordMenu_delete(struct wordMenu *arr, int index) {
     assert(index < arr->used);
 
     // TODO: delete item and rearrange as necessary
     // maybe also go through array and update start/stop rows & redraw screen if item is currently drawn (if will need this functionality)
 }
 
-void MenuArray_draw(struct menuArray *arr, int index) {
+void WordMenu_draw(struct wordMenu *arr, int index) {
     assert(index < arr->used);
 
-    MenuItem *drawingItem = &arr->array[index];
+    Word *drawingItem = &arr->array[index];
 
     // must set startRow if this is the first time drawing this item
     if (drawingItem->startRow == -1 && drawingItem->endRow == -1) {
@@ -86,7 +86,8 @@ void MenuArray_draw(struct menuArray *arr, int index) {
     assert(drawingItem->endRow != -1);
 }
 
-void MenuArray_select(struct menuArray *arr, int index) {
+void WordMenu_select(struct wordMenu *arr, int index) {
+    // must be a drawn item
     assert(index < arr->used);
     assert(arr->array[index].startRow != -1);
     assert(arr->array[index].endRow != -1);
@@ -94,14 +95,14 @@ void MenuArray_select(struct menuArray *arr, int index) {
 
     // unselect previous selection if it exists
     if (arr->currIndex != -1) {
-	MenuItem *prevSelectedItem = &arr->array[arr->currIndex];
+	Word *prevSelectedItem = &arr->array[arr->currIndex];
 	for (int i = prevSelectedItem->startRow; i <= prevSelectedItem->endRow + 1; ++i) { // + 1 to highlight empty newline between elements
 	    mvchgat(i, 0, -1, A_NORMAL, 1, NULL);
 	}
     }
 
     // select new item
-    MenuItem *selectingItem = &arr->array[index];
+    Word *selectingItem = &arr->array[index];
     for (int i = selectingItem->startRow; i <= selectingItem->endRow + 1; ++i) { // + 1 to highlight empty newline between elements
 	mvchgat(i, 0, -1, A_STANDOUT, 1, NULL);
     }
