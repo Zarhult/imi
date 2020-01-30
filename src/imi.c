@@ -1,11 +1,10 @@
 #include <stddef.h>
 #include <signal.h>
 #include <locale.h>
-
 #include <ncurses.h>
-
-#include "word.h"
-#include "wordmenu.h"
+#include "worddef.h"
+#include "defmenu.h"
+#include "parse.h"
 
 // ??!
 
@@ -26,57 +25,67 @@ int main(int argc, char *argv[]) {
     //init_pair(1, COLOR_WHITE, COLOR_BLACK);
     //attron(COLOR_PAIR(1));
 
-    int row, col;
-    getmaxyx(stdscr, row, col);
+    // not yet necessary
+    //int row, col;
+    //getmaxyx(stdscr, row, col);
 
     attron(A_UNDERLINE);
     printw("imi - A Japanese dictionary tool for nerds");
     attroff(A_UNDERLINE);
 
     // prepare menu
-    WordMenu entries = WordMenu_new(1);
-    Word test1 = Word_new("テキスト", "てきすと", "text");
-    Word test2 = Word_new("日本語", "にほんご", "japanese");
-    Word test3 = Word_new("魔女", "まじょ", "witch");
-    Word test4 = Word_new("長い", "ながい", "long");
-    WordMenu_insert(&entries, &test1);
-    WordMenu_insert(&entries, &test2);
-    WordMenu_insert(&entries, &test3);
-    WordMenu_insert(&entries, &test4);
+    DefMenu entries = DefMenu_NEW(1);
+    WordDef test1 = WordDef_NEW("テキスト", "てきすと", "text");
+    WordDef test2 = WordDef_NEW("日本語", "にほんご", "japanese");
+    WordDef test3 = WordDef_NEW("魔女", "まじょ", "witch");
+    WordDef test4 = WordDef_NEW("長い", "ながい", "long");
+    DefMenu_INSERT(&entries, &test1);
+    DefMenu_INSERT(&entries, &test2);
+    DefMenu_INSERT(&entries, &test3);
+    DefMenu_INSERT(&entries, &test4);
 
     // draw menu and select first item
     int i;
     for (i = 0; i < entries.used; ++i) {
-	WordMenu_draw(&entries, i);
+	DefMenu_DRAW(&entries, i);
     }
-    WordMenu_select(&entries, 0);
+    DefMenu_SELECT(&entries, 0);
 
     // main loop
-    int ch;
-    while( (ch = getch()) != 'q' ) {
-        if (ch == 'j' && entries.currIndex < entries.used - 1) {
-            WordMenu_select(&entries, entries.currIndex + 1);
-        }
-        else if (ch == 'k' && entries.currIndex > 0) {
-            WordMenu_select(&entries, entries.currIndex - 1);
-        }
+    if (argc == 2) {
+	char* __attribute__((unused)) search = argv[1]; // unused until implemented
+	// TODO: handle parameter word search
+    }
+    else {
+	char ch;
+	while( (ch = getch()) != 'q' ) {
+	    if (ch == 'j' && entries.currIndex < entries.used - 1) {
+		DefMenu_SELECT(&entries, entries.currIndex + 1);
+	    }
+	    else if (ch == 'k' && entries.currIndex > 0) {
+		DefMenu_SELECT(&entries, entries.currIndex - 1);
+	    }
+	    else if (ch == 'l') {
+		WordDef result = searchDict(entries.array[entries.currIndex].word, "/home/calvin/downloads/Yomichan Dictionaries/jmdict_english/");
+	    }
 
-        refresh();
+	    refresh();
+	}
     }
 
     // catch resize event
     signal(SIGWINCH, resizeHandler);
 
     // end
-    WordMenu_free(&entries);
+    DefMenu_FREE(&entries);
     endwin();
 
     return 0;
 }
 
-void resizeHandler(int sig) {
-    int row, col;
-    getmaxyx(stdscr, row, col);
+void resizeHandler(int __attribute__ ((unused)) sig) { // sig unused until implemented
+    //int row, col;
+    //getmaxyx(stdscr, row, col);
 
     // TODO: handle here
 }

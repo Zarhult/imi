@@ -1,41 +1,33 @@
 #include <stdlib.h>
 #include <assert.h>
-
 #include <ncurses.h>
+#include "worddef.h"
+#include "defmenu.h"
 
-#include "word.h"
-
-struct wordMenu {
-    Word *array;
-    size_t size;
-    int used;
-    int currIndex;
-};
-
-struct wordMenu WordMenu_new(size_t initialSize) {
+DefMenu DefMenu_NEW(size_t initialSize) {
     assert(initialSize > 0);
 
-    struct wordMenu arr;
-    arr.array = (Word *)malloc(initialSize * sizeof(Word));
+    struct defMenu arr;
+    arr.array = (WordDef *)malloc(initialSize * sizeof(WordDef));
     arr.used = 0;
     arr.size = initialSize;
     arr.currIndex = -1; // set by first MenuArray_select call
     return arr;
 }
 
-void WordMenu_insert(struct wordMenu *arr, Word *item) {
+void DefMenu_INSERT(DefMenu *arr, WordDef *item) {
     assert(item != NULL);
 
     if ((size_t)arr->used == arr->size) {
 	arr->size *= 2;
-	arr->array = (Word *)realloc(arr->array, arr->size * sizeof(Word));
+	arr->array = (WordDef *)realloc(arr->array, arr->size * sizeof(WordDef));
     }
     arr->array[arr->used] = *item;
     ++arr->used;
 }
 
 
-void WordMenu_free(struct wordMenu *arr) {
+void DefMenu_FREE(DefMenu *arr) {
     free(arr->array);
     arr->array = NULL;
     arr->size = 0;
@@ -43,17 +35,17 @@ void WordMenu_free(struct wordMenu *arr) {
     arr->currIndex = -1;
 }
 
-void WordMenu_delete(struct wordMenu *arr, int index) {
+void WordMenu_DELETE(DefMenu *arr, int index) {
     assert(index < arr->used);
 
     // TODO: delete item and rearrange as necessary
     // maybe also go through array and update start/stop rows & redraw screen if item is currently drawn (if will need this functionality)
 }
 
-void WordMenu_draw(struct wordMenu *arr, int index) {
+void DefMenu_DRAW(DefMenu *arr, int index) {
     assert(index < arr->used);
 
-    Word *drawingItem = &arr->array[index];
+    WordDef *drawingItem = &arr->array[index];
 
     // must set startRow if this is the first time drawing this item
     if (drawingItem->startRow == -1 && drawingItem->endRow == -1) {
@@ -75,7 +67,7 @@ void WordMenu_draw(struct wordMenu *arr, int index) {
     mvprintw(drawingItem->startRow, 0, drawingItem->word);
     printw(" - ");
     printw(drawingItem->reading);
-    int row, col;
+    int row, __attribute__((unused)) col; // col must be fed to getyx even though don't use it
     getyx(stdscr, row, col);
     mvprintw(row + 1, 0, drawingItem->definition);
     // set endRow to last row of definition
@@ -86,7 +78,7 @@ void WordMenu_draw(struct wordMenu *arr, int index) {
     assert(drawingItem->endRow != -1);
 }
 
-void WordMenu_select(struct wordMenu *arr, int index) {
+void DefMenu_SELECT(DefMenu *arr, int index) {
     // must be a drawn item
     assert(index < arr->used);
     assert(arr->array[index].startRow != -1);
@@ -95,14 +87,14 @@ void WordMenu_select(struct wordMenu *arr, int index) {
 
     // unselect previous selection if it exists
     if (arr->currIndex != -1) {
-	Word *prevSelectedItem = &arr->array[arr->currIndex];
+	WordDef *prevSelectedItem = &arr->array[arr->currIndex];
 	for (int i = prevSelectedItem->startRow; i <= prevSelectedItem->endRow + 1; ++i) { // + 1 to highlight empty newline between elements
 	    mvchgat(i, 0, -1, A_NORMAL, 1, NULL);
 	}
     }
 
     // select new item
-    Word *selectingItem = &arr->array[index];
+    WordDef *selectingItem = &arr->array[index];
     for (int i = selectingItem->startRow; i <= selectingItem->endRow + 1; ++i) { // + 1 to highlight empty newline between elements
 	mvchgat(i, 0, -1, A_STANDOUT, 1, NULL);
     }

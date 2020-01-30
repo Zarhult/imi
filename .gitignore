@@ -1,14 +1,24 @@
-# CMake
+# cmake
 CMakeFiles/
 CMakeCache.txt
 Makefile
 cmake_install.cmake
 
-# ccls/coc.nvim
+# vim plugin stuff
 Debug/
 compile_commands.json
 .ccls-cache/
 .ccls
+.color_coded
+.clangd/
+
+# ctags
+tags
+src/tags
 
 # executables
+a.out
 imi
+
+# other
+TEST.c
