@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
     // prepare menu
     DefMenu entries = DefMenu_NEW(1);
-    WordDef test1 = WordDef_NEW("テキスト", "てきすと", "text");
+    WordDef test1 = WordDef_NEW("かしこ", "かしこ", "TEST");
     WordDef test2 = WordDef_NEW("日本語", "にほんご", "japanese");
     WordDef test3 = WordDef_NEW("魔女", "まじょ", "witch");
     WordDef test4 = WordDef_NEW("長い", "ながい", "long");
@@ -66,7 +66,10 @@ int main(int argc, char *argv[]) {
 		DefMenu_SELECT(&entries, entries.currIndex - 1);
 	    }
 	    else if (ch == 'l') {
-		WordDef result = searchDict(entries.array[entries.currIndex].word, "/home/calvin/downloads/Yomichan Dictionaries/jmdict_english/");
+		WordDef result = searchDict(entries.array[entries.currIndex].word, "jmdict_english");
+		DefMenu_INSERT(&entries, &result);
+		DefMenu_DRAW(&entries, entries.used - 1);
+		DefMenu_SELECT(&entries, entries.used - 1);
 	    }
 
 	    refresh();

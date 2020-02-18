@@ -3,6 +3,6 @@
 
 #include "worddef.h"
 
-WordDef searchDict(const char *, const char *);
+WordDef searchDict(const char *, char *);
 
 #endif // PARSE_H

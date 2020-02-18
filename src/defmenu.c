@@ -35,7 +35,7 @@ void DefMenu_FREE(DefMenu *arr) {
     arr->currIndex = -1;
 }
 
-void WordMenu_DELETE(DefMenu *arr, int index) {
+void DefMenu_DELETE(DefMenu *arr, int index) {
     assert(index < arr->used);
 
     // TODO: delete item and rearrange as necessary
