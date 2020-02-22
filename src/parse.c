@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <stdbool.h>
 #include <bsd/string.h>
 #include <ncurses.h>
 #include "worddef.h"
@@ -20,8 +21,8 @@ WordDef searchDict(const char *word, char *dirName) {
     // loop through all valid dictionary files
     FILE *dict = NULL;
     bool resultFound = false;
-    const char *reading = "";
-    const char *definition = "";
+    char reading[20];
+    char definition[200];
     for (int fileNum = 1; (dict || fileNum == 1) && !resultFound; ++fileNum) {
 	// finish path string with file number
 	char fullPath[100];
@@ -58,13 +59,13 @@ WordDef searchDict(const char *word, char *dirName) {
 
 			    // get reading
 			    while( (c = fgetc(dict)) != '"' ) {
-				mvprintw(6, 6, "2");
+				//mvprintw(6, 6, "2");
 				char toString[2];
 				toString[0] = c;
 				toString[1] = 0;
 				strlcat(temp, toString, sizeof(temp));
 			    }
-			    reading = temp;
+			    strlcpy(reading, temp, sizeof(reading));
 
 			    // clear temp
 			    memset(temp, 0, sizeof(temp));
@@ -81,20 +82,20 @@ WordDef searchDict(const char *word, char *dirName) {
 
 			    // get definition
 			    while( (c = fgetc(dict)) != '"' ) {
-				mvprintw(7, 7, "3");
+				//mvprintw(7, 7, "3");
 				char toString[2];
 				toString[0] = c;
 				toString[1] = 0;
 				strlcat(temp, toString, sizeof(temp));
 			    }
-			    definition = temp;
+			    strlcpy(definition, temp, sizeof(definition));
 
 			    // clear temp
 			    memset(temp, 0, sizeof(temp));
 
 			    resultFound = true;
-			    reading = "FOUND";
-			    definition = "FOUND";			
+			    //reading = "FOUND";
+			    //definition = "FOUND";			
 
 			    // break out of while loop once have search results
 			    break;

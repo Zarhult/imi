@@ -14,10 +14,5 @@ add_executable(imi
    src/parse.c
 )
 
-if(MSVC)
-    target_compile_options(imi PRIVATE /W4 /WX)
-else()
-    target_compile_options(imi PRIVATE -Wall -Wextra -pedantic -lbsd)
-endif()
-
+target_compile_options(imi PRIVATE -Wall -Wextra -pedantic -lbsd)
 target_link_libraries(imi ${CURSES_LIBRARIES} ${LIB_BSD_FILE}) 
